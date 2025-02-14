@@ -25,6 +25,7 @@ import MessageBox from '@ts/ui/chat/messagebox';
 import type { MessageTemplate, Properties as MessageListProperties } from '@ts/ui/chat/messagelist';
 import MessageList from '@ts/ui/chat/messagelist';
 import type { DataChange } from '@ts/ui/collection/collection_widget.base';
+import { render } from 'inferno';
 
 const CHAT_CLASS = 'dx-chat';
 const TEXTEDITOR_INPUT_CLASS = 'dx-texteditor-input';
@@ -33,8 +34,6 @@ class Chat extends Widget<Properties> {
   _messageBox!: MessageBox;
 
   _messageList!: MessageList;
-
-  _alertList!: AlertList;
 
   _messageEnteredAction?: (e: Partial<MessageEnteredEvent>) => void;
 
@@ -108,16 +107,31 @@ class Chat extends Widget<Properties> {
     return { paginate: false };
   }
 
+  _renderInferno(): void {
+    const { alerts = [] } = this.option();
+    
+    render(
+      // messagelist
+      <AlertList
+        items={alerts}
+      />,
+      $(this.element()).get(0)
+    )
+  }
+
+
   _initMarkup(): void {
     $(this.element()).addClass(CHAT_CLASS);
+    this._updateRootAria();
 
     super._initMarkup();
 
+    this._renderInferno();
+
     this._renderMessageList();
-    this._renderAlertList();
+    // this._renderAlertList();
     this._renderMessageBox();
 
-    this._updateRootAria();
     this._updateMessageBoxAria();
   }
 
