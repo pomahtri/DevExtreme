@@ -1,15 +1,16 @@
 import { createScreenshotsComparer } from 'devextreme-screenshot-comparer';
-import { Selector } from 'testcafe';
+import CardView from 'testcafe-models/cardView';
 import url from '../../helpers/getPageUrl';
 import { createWidget } from '../../helpers/createWidget';
 
-fixture.disablePageReloads`CardView - Headers`
+fixture.disablePageReloads`CardView - HeaderPanel`
   .page(url(__dirname, '../container.html'));
 
 test('default render', async (t) => {
+  const cardView = new CardView('#container');
   const { takeScreenshot, compareResults } = createScreenshotsComparer(t);
 
-  await takeScreenshot('headers', Selector('.dx-gridcore-headers'));
+  await takeScreenshot('header-panel', cardView.getHeaderPanel().element);
 
   await t
     .expect(compareResults.isValid())
