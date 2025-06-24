@@ -1,14 +1,13 @@
 import domAdapter from '@js/core/dom_adapter';
 import callOnce from '@js/core/utils/call_once';
 
-// eslint-disable-next-line import/no-named-as-default
-import Callbacks from './m_callbacks';
+import { Callback } from './m_callbacks';
 import readyCallbacks from './m_ready_callbacks';
 import windowModule from './m_window';
 
 const resizeCallbacks = (function () {
   let prevSize;
-  const callbacks = Callbacks();
+  const callbacks = new Callback();
   const originalCallbacksAdd = callbacks.add;
   const originalCallbacksRemove = callbacks.remove;
 
@@ -50,6 +49,7 @@ const resizeCallbacks = (function () {
   let removeListener;
 
   callbacks.add = function () {
+    // @ts-expect-error
     const result = originalCallbacksAdd.apply(callbacks, arguments);
 
     setPrevSize();
@@ -64,6 +64,7 @@ const resizeCallbacks = (function () {
   };
 
   callbacks.remove = function () {
+    // @ts-expect-error
     const result = originalCallbacksRemove.apply(callbacks, arguments);
     if (!callbacks.has() && removeListener) {
       removeListener();
