@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/method-signature-style */
 import ArrayStore from '@js/common/data/array_store';
 import { CustomStore } from '@js/common/data/custom_store';
 import $ from '@js/core/renderer';
@@ -9,6 +8,7 @@ import { extend } from '@js/core/utils/extend';
 import { each } from '@js/core/utils/iterator';
 import { isDefined, isObject } from '@js/core/utils/type';
 import errors from '@js/ui/widget/ui.errors';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import type { EditingController } from '@ts/grids/grid_core/editing/m_editing';
 import type { EditorFactory } from '@ts/grids/grid_core/editor_factory/m_editor_factory';
 import type { ErrorHandlingController } from '@ts/grids/grid_core/error_handling/m_error_handling';
@@ -132,17 +132,36 @@ export class DataController extends DataHelperMixin(modules.Controller) {
 
   private _loadingText: string | undefined;
 
-  public dataErrorOccurred: any;
+  public changed = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
-  public pageChanged: any;
+  public loadingChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
-  public pushed: any;
+  public dataErrorOccurred = new Callback({
+    unique: true,
+    syncStrategy: true,
+    stopOnFalse: true,
+  });
 
-  public changed: any;
+  public pageChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
-  public loadingChanged: any;
+  public dataSourceChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
-  public dataSourceChanged: any;
+  public pushed = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   protected _lastRenderingPageIndex: any;
 
@@ -243,18 +262,6 @@ export class DataController extends DataHelperMixin(modules.Controller) {
    */
   protected _getPagingOptionValue(optionName) {
     return this._dataSource[optionName]();
-  }
-
-  protected callbackNames() {
-    return ['changed', 'loadingChanged', 'dataErrorOccurred', 'pageChanged', 'dataSourceChanged', 'pushed'];
-  }
-
-  protected callbackFlags(name?: string) {
-    if (name === 'dataErrorOccurred') {
-      return { stopOnFalse: true };
-    }
-
-    return undefined;
   }
 
   public publicMethods() {
@@ -607,7 +614,6 @@ export class DataController extends DataHelperMixin(modules.Controller) {
     this.pushed.fire(changes);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public fireError(...args: any[]) {
     this.dataErrorOccurred.fire(errors.Error.apply(errors, args));
   }
@@ -1723,7 +1729,7 @@ export class DataController extends DataHelperMixin(modules.Controller) {
   /**
    * @extended: editing, virtual_scrolling
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   public reload(reload?, changesOnly?): any {
     return this._dataSource?.reload(reload, changesOnly);
   }

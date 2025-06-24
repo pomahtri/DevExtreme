@@ -27,6 +27,7 @@ import {
 } from '@js/core/utils/type';
 import { getWindow, hasWindow } from '@js/core/utils/window';
 import type { DxEvent } from '@js/events';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import supportUtils from '@ts/core/utils/m_support';
 import type { AdaptiveColumnsController } from '@ts/grids/grid_core/adaptivity/m_adaptivity';
 import type { ColumnChooserController, ColumnChooserView } from '@ts/grids/grid_core/column_chooser/m_column_chooser';
@@ -175,7 +176,10 @@ export class ColumnsView extends ColumnStateMixin(modules.View) {
 
   protected _requireReady: any;
 
-  public scrollChanged: any;
+  public scrollChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   protected _columnsController!: ColumnsController;
 
@@ -394,7 +398,7 @@ export class ColumnsView extends ColumnStateMixin(modules.View) {
         const visibleColumns = this._columnsController.getVisibleColumns();
         const rowOptions: any = $row.data('options');
         const columnIndex = $cell.index();
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+
         const cellOptions = rowOptions && rowOptions.cells && rowOptions.cells[columnIndex];
         const column = cellOptions ? cellOptions.column : visibleColumns[columnIndex];
 
@@ -1035,10 +1039,6 @@ export class ColumnsView extends ColumnStateMixin(modules.View) {
   protected _handleDataChanged(e) {
   }
 
-  public callbackNames() {
-    return ['scrollChanged'];
-  }
-
   protected _updateScrollLeftPosition() {
     const scrollLeft = this._scrollLeft;
 
@@ -1104,7 +1104,6 @@ export class ColumnsView extends ColumnStateMixin(modules.View) {
   }
 
   private needWaitAsyncTemplates() {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
     return this.option('templatesRenderAsynchronously') && this.option('renderAsync') === false;
   }
 
@@ -1154,11 +1153,9 @@ export class ColumnsView extends ColumnStateMixin(modules.View) {
     const result: number[] = [];
     const cellElements = $cellElements.toArray();
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     (cellElements as HTMLElement[]).forEach((cell) => {
       let width = cell.offsetWidth;
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       if ((cell as any).getBoundingClientRect) {
         const rect = getBoundingRect(cell);
 

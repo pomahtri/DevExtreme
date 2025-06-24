@@ -4,7 +4,6 @@ import domAdapter from '@js/core/dom_adapter';
 import type { dxElementWrapper } from '@js/core/renderer';
 import $ from '@js/core/renderer';
 import browser from '@js/core/utils/browser';
-import type { Callback } from '@js/core/utils/callbacks';
 import { deferRender, deferUpdate } from '@js/core/utils/common';
 import type { DeferredObj } from '@js/core/utils/deferred';
 import { Deferred, when } from '@js/core/utils/deferred';
@@ -14,6 +13,7 @@ import { getHeight, getWidth } from '@js/core/utils/size';
 import { isDefined, isNumeric, isString } from '@js/core/utils/type';
 import { getWindow, hasWindow } from '@js/core/utils/window';
 import * as accessibility from '@js/ui/shared/accessibility';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import type { EditorFactory } from '@ts/grids/grid_core/editor_factory/m_editor_factory';
 import { A11yStatusContainerComponent } from '@ts/grids/grid_core/views/a11y_status_container_component';
 
@@ -101,11 +101,10 @@ export class ResizingController extends modules.ViewController {
 
   protected _updateScrollableTimeoutID: any;
 
-  public resizeCompleted!: Callback;
-
-  protected callbackNames() {
-    return ['resizeCompleted'];
-  }
+  public resizeCompleted = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   public init() {
     this._prevContentMinHeight = null;

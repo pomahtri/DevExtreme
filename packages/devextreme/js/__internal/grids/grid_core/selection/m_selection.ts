@@ -13,6 +13,7 @@ import { extend } from '@js/core/utils/extend';
 import { each } from '@js/core/utils/iterator';
 import { isDefined } from '@js/core/utils/type';
 import errors from '@js/ui/widget/ui.errors';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import supportUtils from '@ts/core/utils/m_support';
 import type { ColumnHeadersView } from '@ts/grids/grid_core/column_headers/m_column_headers';
 import type { ColumnsController } from '@ts/grids/grid_core/columns_controller/m_columns_controller';
@@ -125,7 +126,10 @@ export class SelectionController extends modules.Controller {
 
   private _selection!: Selection;
 
-  public selectionChanged: any;
+  public selectionChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   private _selectedItemsInternalChange?: boolean;
 
@@ -399,10 +403,6 @@ export class SelectionController extends modules.Controller {
     }
 
     return itemIndexes;
-  }
-
-  protected callbackNames() {
-    return ['selectionChanged'];
   }
 
   public optionChanged(args) {

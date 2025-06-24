@@ -14,6 +14,7 @@ import {
   getOuterWidth, setOuterHeight, setOuterWidth,
 } from '@js/core/utils/size';
 import EditorFactoryMixin from '@js/ui/shared/ui.editor_factory_mixin';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import type { ColumnHeadersView } from '@ts/grids/grid_core/column_headers/m_column_headers';
 import type {
   ColumnsResizerViewController,
@@ -61,7 +62,10 @@ export class EditorFactory extends ViewControllerWithMixin {
 
   private _focusTimeoutID: any;
 
-  public focused: any;
+  public focused = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   protected _$focusOverlay: any;
 
@@ -210,10 +214,6 @@ export class EditorFactory extends ViewControllerWithMixin {
     $element.show();
   }
 
-  protected callbackNames() {
-    return ['focused'];
-  }
-
   protected getFocusOverlayContainer($focusedElement: dxElementWrapper): dxElementWrapper {
     return $focusedElement.closest(`.${this.addWidgetPrefix(CONTENT_CLASS)}`);
   }
@@ -336,7 +336,7 @@ export class EditorFactory extends ViewControllerWithMixin {
     // @ts-expect-error
     // NOTE: this condition is for the 'Row - Redundant validation messages should not be rendered in a detail grid when focused row is enabled (T950174)'
     // testcafe test. The detail grid is created inside document_fragment_node but it is not shadow dom
-    // eslint-disable-next-line no-undef
+
     if (root.nodeType === Node.DOCUMENT_FRAGMENT_NODE && !root.host) {
       return domAdapter.getDocument();
     }

@@ -20,6 +20,7 @@ import variableWrapper from '@js/core/utils/variable_wrapper';
 import Store from '@js/data/abstract_store';
 import filterUtils from '@js/ui/shared/filtering';
 import errors from '@js/ui/widget/ui.errors';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import inflector from '@ts/core/utils/m_inflector';
 import type { DataController } from '@ts/grids/grid_core/data_controller/m_data_controller';
 import type { FocusController } from '@ts/grids/grid_core/focus/m_focus';
@@ -126,7 +127,10 @@ export class ColumnsController extends modules.Controller {
 
   private __sortingUpdated: any;
 
-  public columnsChanged: any;
+  public readonly columnsChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   public _columnChanges: any;
 
@@ -204,10 +208,6 @@ export class ColumnsController extends modules.Controller {
 
   protected _endUpdateCore() {
     !this._skipProcessingColumnsChange && fireColumnsChanged(this);
-  }
-
-  protected callbackNames() {
-    return ['columnsChanged'];
   }
 
   public getColumnByPath(path, columns?) {
