@@ -11,6 +11,7 @@ import { format } from '@js/core/utils/string';
 import { isDefined, isFunction } from '@js/core/utils/type';
 import List from '@js/ui/list_light';
 import errors from '@js/ui/widget/ui.errors';
+import { Callback } from '@ts/core/utils/m_callbacks';
 import { prepareItems } from '@ts/grids/grid_core/m_export';
 
 import type { ColumnHeadersView } from '../../grid_core/column_headers/m_column_headers';
@@ -346,7 +347,10 @@ export class ExportController extends dataGridCore.ViewController {
 
   private _isSelectedRows: any;
 
-  private readonly selectionOnlyChanged: any;
+  private readonly selectionOnlyChanged = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   public init() {
     this.throwWarningIfNoOnExportingEvent();
@@ -644,10 +648,6 @@ export class ExportController extends dataGridCore.ViewController {
     }
   }
 
-  protected callbackNames() {
-    return ['selectionOnlyChanged'];
-  }
-
   private getDataProvider(selectedRowsOnly) {
     const columnWidths = this._getColumnWidths(this._headersView, this._rowsView);
     let initialColumnWidthsByColumnIndex;
@@ -701,21 +701,30 @@ export class ExportController extends dataGridCore.ViewController {
     return this.option('loadItemsOnExportingSelectedItems')
       ?? this._dataController._dataSource.remoteOperations().filtering;
   }
+
+  public dispose() {
+    super.dispose();
+
+    this.selectionOnlyChanged.empty();
+  }
 }
 
 const editing = (Base: ModuleType<EditingController>) => class ExportEditingControllerExtender extends Base {
-  // @ts-expect-error
-  private callbackNames() {
-    const callbackList = super.callbackNames();
-
-    return isDefined(callbackList) ? callbackList.push('editingButtonsUpdated') : ['editingButtonsUpdated'];
-  }
+  private readonly editingButtonsUpdated = new Callback({
+    unique: true,
+    syncStrategy: true,
+  });
 
   protected _updateEditButtons() {
     super._updateEditButtons();
 
-    // @ts-expect-error
     this.editingButtonsUpdated.fire();
+  }
+
+  public dispose() {
+    super.dispose();
+
+    this.editingButtonsUpdated.empty();
   }
 };
 
